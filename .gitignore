@@ -172,3 +172,18 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# YOLO training outputs and exported model artifacts
+runs/**
+!runs/
+!runs/half-annotated/
+!runs/half-annotated/.gitignore
+!runs/fully-annotated/
+!runs/fully-annotated/.gitignore
+
+models/**
+!models/
+!models/half-annotated/
+!models/half-annotated/.gitignore
+!models/fully-annotated/
+!models/fully-annotated/.gitignore
