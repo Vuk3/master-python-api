@@ -1,4 +1,0 @@
-# YOLO training runs for the fully-annotated dataset go here.
-# Keep generated files out of git.
-*
-!.gitignore
