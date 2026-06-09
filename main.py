@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from routes.health import router as health_router
+from routes.models import router as models_router
 from routes.predict import router as predict_router
 
 app = FastAPI()
 app.include_router(health_router)
+app.include_router(models_router)
 app.include_router(predict_router)
 
 

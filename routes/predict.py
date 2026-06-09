@@ -1,6 +1,7 @@
 import io
+from typing import Optional
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from PIL import Image
 from services.model_service import get_model
 
@@ -8,12 +9,14 @@ router = APIRouter()
 
 
 @router.post("/predict")
-async def predict(file: UploadFile = File(...)):
+async def predict(
+    file: UploadFile = File(...), model: Optional[str] = Form(default=None)
+):
     if not file:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
-    model, load_err = get_model()
-    if model is None:
+    loaded_model, model_info, load_err = get_model(model)
+    if loaded_model is None:
         raise HTTPException(status_code=500, detail=f"YOLO model not loaded: {load_err}")
 
     try:
@@ -24,7 +27,7 @@ async def predict(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Invalid image file")
 
     try:
-        results = model.predict(img, verbose=False)
+        results = loaded_model.predict(img, verbose=False)
         result = results[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
@@ -55,7 +58,9 @@ async def predict(file: UploadFile = File(...)):
             )
 
     return {
-        "model": "yolov8",
+        "model": model_info["name"] if model_info else "YOLO",
+        "modelId": model_info["id"] if model_info else None,
+        "annotationType": model_info["annotationType"] if model_info else None,
         "imageWidth": int(image_width),
         "imageHeight": int(image_height),
         "detections": detections,
